@@ -34,11 +34,11 @@ Use this as a working task tracker. Do tasks in order unless a dependency is alr
 
 ### Implementation Details
 
--
+- Initial project setup completed with bun create vite. Added tailwindcss and shadcn for faster component creation.
 
 ### Complete/Incomplete
 
-- Incomplete
+- Complete
 
 ## Task 0.2: Add baseline project structure
 
@@ -66,11 +66,11 @@ Use this as a working task tracker. Do tasks in order unless a dependency is alr
 
 ### Implementation Details
 
--
+- Added the baseline `src/` structure with dedicated `app/`, `components/`, `features/`, `store/`, `lib/`, and `types/` folders. Moved the app entry into `src/app/`, added separate Zustand setup for run and UI state, and established shared utility and type modules.
 
 ### Complete/Incomplete
 
-- Incomplete
+- Complete
 
 ## Task 0.3: Add formatting and linting
 
@@ -92,7 +92,7 @@ Use this as a working task tracker. Do tasks in order unless a dependency is alr
 
 ### Implementation Details
 
--
+- Added oxc linting and formatting, replacing eslint. updated typecheck script to give --pretty output.
 
 ### Complete/Incomplete
 
@@ -108,21 +108,24 @@ Use this as a working task tracker. Do tasks in order unless a dependency is alr
 
 - Trading terminal layout with separate windows
 - Main market screen
-- Top bar, left stock list, center detail view, right portfolio/actions, bottom utility area
+- Top news ticker
+- Left navigation sidebar
+- Center main view that swaps overview, portfolio, stock detail, settings, and help-style panels
+- Right contextual stock list
 
 ### Acceptance Criteria
 
-- The app renders a stable main layout with obvious regions for each major panel.
+- The app renders a stable desktop shell with an obvious ticker, navigation sidebar, main view, and stock sidebar.
 - Panels resize sensibly on a desktop viewport.
-- Placeholder content identifies each panel.
+- Placeholder content identifies the available views and shell regions.
 
 ### Implementation Details
 
--
+- Added a menu-driven shell with a top news ticker, persistent left navigation, central view switching for major screens, and a right stock sidebar. The layout now prioritizes the main panel while keeping market navigation visible.
 
 ### Complete/Incomplete
 
-- Incomplete
+- Complete
 
 ## Phase 1: Core Types and Save System
 

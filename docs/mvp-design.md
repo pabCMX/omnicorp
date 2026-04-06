@@ -449,15 +449,17 @@ const si = Math.floor(5 * n * Math.log2(n + 1)) + controlBonus;
 ### Main Layout
 
 - Trading terminal layout with separate windows
-- Main center window reserved for detailed views and summary views
-- Side windows can show or hide columns and information
+- Top news ticker that stays visible above the main shell
+- Left navigation sidebar for switching major views
+- Large center window reserved for dashboard, portfolio, stock detail, settings, help, and similar high-focus views
+- Right stock sidebar for browsing and selecting companies while staying in the current main view
 
 ### Default Windows
 
-- Vertical news headline feed
-- Market movers with gainers and losers
-- Portfolio slim summary with company name, ticker, day percent change, day dollar change, and current price
-- Center detail view for the selected stock
+- Top news ticker
+- Left navigation menu
+- Center overview dashboard
+- Right stock list with search and company selection
 
 ### Stock Detail View
 
@@ -474,6 +476,10 @@ const si = Math.floor(5 * n * Math.log2(n + 1)) + controlBonus;
 ### Required Views
 
 - Main market screen
+- Portfolio screen
+- Stock detail screen
+- Settings screen
+- Help / tutorial / credits style informational screens
 - Prestige screen
 - Omnicorp victory screen
 - Save import/export modal
