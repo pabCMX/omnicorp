@@ -96,7 +96,7 @@ Use this as a working task tracker. Do tasks in order unless a dependency is alr
 
 ### Complete/Incomplete
 
-- Incomplete
+- Complete
 
 ## Task 0.4: Add app shell and placeholder layout
 
@@ -152,11 +152,11 @@ Use this as a working task tracker. Do tasks in order unless a dependency is alr
 
 ### Implementation Details
 
--
+- Added the initial shared game type layer in `src/types/` covering stock definitions and runtime state, market/save state, career state, prestige, settings, and supporting UI/news types. The type model now reflects derived portfolio and subsidiary behavior, and the design doc has been updated to match the current source of truth.
 
 ### Complete/Incomplete
 
-- Incomplete
+- Complete
 
 ## Task 1.2: Define constants and enums
 
@@ -181,11 +181,11 @@ Use this as a working task tracker. Do tasks in order unless a dependency is alr
 
 ### Implementation Details
 
--
+- Centralized shared gameplay identifiers and defaults in `src/lib/` and `src/types/`, including sector IDs, market regime IDs and definitions, career track IDs, job data, save key/version, tick defaults, settings defaults, and board-meeting cadence values. Feature code now imports these shared constants instead of hard-coding the core IDs and repeated setup values.
 
 ### Complete/Incomplete
 
-- Incomplete
+- Complete
 
 ## Task 1.3: Build the save/load utility
 

@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import type { SettingsState } from "@/types/types";
+import { useRunStore } from "@/store/runStore";
 
 interface UiStore {
   settings: SettingsState;
@@ -13,12 +14,12 @@ export const useUiStore = create<UiStore>((set) => ({
     showNews: true,
     showMarketMovers: true,
     showPortfolio: true,
-    showDetailView: false,
+    showDetailView: true,
     showDebug: false,
     showHelp: false,
     showCredits: false,
     showTutorial: false,
-    tickSpeed: 1,
+    tickSpeed: useRunStore.getState().run.tickSpeed,
     autoSaveInterval: 10,
     autoSaveEnabled: true,
   },

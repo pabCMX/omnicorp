@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { useRunStore } from "@/store/runStore";
 import { useUiStore } from "@/store/uiStore";
 
 export function Settings() {
   const { settings, setSettings } = useUiStore();
-
+  const { run, setRun } = useRunStore();
   return (
     <div className="flex flex-col gap-4 mt-4">
       <Button
@@ -56,15 +57,15 @@ export function Settings() {
       </Button>
       <Button
         className="mt-4"
-        onClick={() => setSettings({ ...settings, tickSpeed: settings.tickSpeed + 1 })}
+        onClick={() => setRun({ ...run, tickSpeed: run.tickSpeed + 1 })}
       >
-        Increase Tick Speed
+        Increase ticks per second
       </Button>
       <Button
         className="mt-4"
-        onClick={() => setSettings({ ...settings, tickSpeed: settings.tickSpeed - 1 })}
+        onClick={() => setRun({ ...run, tickSpeed: run.tickSpeed - 1 })}
       >
-        Decrease Tick Speed
+        Decrease ticks per second
       </Button>
       <Button
         className="mt-4"

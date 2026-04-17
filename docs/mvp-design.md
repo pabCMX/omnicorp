@@ -35,6 +35,7 @@
 - State management: `Zustand`
 - App model: single-page web app
 - Save key: `omnicorp-save-v1`
+- Save version: `1`
 
 ## MVP Scope
 
@@ -113,9 +114,11 @@
 
 ### Market Regimes
 
-- Expansion
-- Contraction
-- Transition
+- `fullExpansion`
+- `highTransition`
+- `steadyState`
+- `lowTransition`
+- `fullContraction`
 
 ## News System
 
@@ -138,32 +141,52 @@
 ## Stock Universe
 
 - Stock count: `8`
-- Sector coverage:
-  - `AGRI` agriculture / food supply
-  - `ENER` energy / utilities
-  - `MFGX` industrial manufacturing
-  - `MEDI` healthcare / biotech
-  - `FINC` banking / finance
-  - `CONS` consumer goods / retail
-  - `TECH` software / semiconductors
-  - `LOGI` transport / logistics
+- Sector coverage uses GICS-style sector IDs:
+  - `XLK` Information Technology
+  - `XLF` Financials
+  - `XLV` Health Care
+  - `XLY` Consumer Discretionary
+  - `XLC` Communication Services
+  - `XLI` Industrials
+  - `XLP` Consumer Staples
+  - `XLE` Energy
+  - `XLU` Utilities
+  - `XLB` Materials
+  - `XLRE` Real Estate
 
 ### Stock Data
 
-Each stock stores:
+Each runtime stock stores immutable seed values and live mutable values in one object.
+Seed values include:
 
-- id
-- ticker
-- name
-- sector
-- initial price
-- shares outstanding
-- base drift
-- base volatility
-- beta
-- sector correlation
-- fair value anchor
-- raid difficulty
+- `stockId`
+- `ticker`
+- `name`
+- `sector`
+- `initialPrice`
+- `initialSharesOutstanding`
+- `baseRegimeDrift`
+- `baseVolatility`
+- `baseBeta`
+- `initialStrategyProfile`
+- `sectorCorrelation`
+- `fairValueAnchor`
+- `raidDifficulty`
+- `boardMeetingDay`
+
+Live values include:
+
+- `currentPrice`
+- `currentSharesOutstanding`
+- `currentRegimeDrift`
+- `currentVolatility`
+- `currentBeta`
+- `ownedShares`
+- `controlLevel`
+- `extractionRate`
+- `currentStrategyProfile`
+- `lastShock`
+- `priceHistory`
 
 ## Trading Systems
 
@@ -188,11 +211,11 @@ Each stock stores:
 
 ### Career Tracks
 
-- Management
+- Service
 - Tech
 - Finance
 
-### Management Ladder
+### Service Ladder
 
 - Burger flipper
 - Supervisor
@@ -226,7 +249,7 @@ Each stock stores:
 ### College Gates
 
 - `0`: burger flipper start job
-- `15`: management promotions
+- `15`: service promotions
 - `25`: tech track entry and non-finance C-suite class roles
 - `40`: finance track entry
 - `50`: high-tier dev/IT roles
@@ -288,7 +311,7 @@ Each stock stores:
 - Promotions are processed after XP awards.
 - Queued job changes are applied last.
 
-### Management Compensation Table
+### Service Compensation Table
 
 - Burger flipper: college `0`, XP `0`, multiplier `1.0`, wage `$60/day`
 - Supervisor: college `15`, XP `10`, multiplier `1.5`, wage `$90/day`
@@ -314,10 +337,10 @@ Each stock stores:
 - Analyst: college `40`, XP `10`, multiplier `2.0`, wage `$120/day`, trade modifier `+/-2%`
 - Associate: college `40`, XP `20`, multiplier `2.8`, wage `$168/day`, trade modifier `+/-3%`
 - Manager: college `40`, XP `30`, multiplier `4.0`, wage `$240/day`, trade modifier `+/-4%`
-- Director: college `40`, XP `40`, multiplier `5.6`, wage `$336/day`, trade modifier `+/-5%`
-- VP: college `40`, XP `50`, multiplier `8.0`, wage `$480/day`, trade modifier `+/-6%`
-- CFO: college `40`, XP `60`, multiplier `11.0`, wage `$660/day`, trade modifier `+/-8%`
-- CEO: college `40`, XP `70`, multiplier `16.0`, wage `$960/day`, trade modifier `+/-10%`
+- Director: college `40`, XP `40`, multiplier `5.6`, wage `$336/day`, trade modifier `+/-6%`
+- VP: college `40`, XP `50`, multiplier `8.0`, wage `$480/day`, trade modifier `+/-10%`
+- CFO: college `40`, XP `60`, multiplier `11.0`, wage `$660/day`, trade modifier `+/-12%`
+- CEO: college `40`, XP `70`, multiplier `16.0`, wage `$960/day`, trade modifier `+/-15%`
 
 ## Recovery and Passive Income
 
@@ -337,15 +360,19 @@ Each stock stores:
 - `33%`: blocking / soft control
 - `51%`: majority control
 - `100%` or forced-merger condition: full acquisition
+- `majority` and `full` automatically imply subsidiary behavior for gameplay systems
+- No separate subsidiary flag is required in MVP; subsidiary behavior is derived from stock control state
 
 ### Corporate Actions
 
 - Restructure
 - Extract cash
 - Merge into holding company
+- Merging into a holding company permanently removes the company from the public market
 - Corporate strategy changes are queued.
 - Corporate strategy changes are applied at board meetings.
 - Board meetings occur every `5` in-game days.
+- Each company has a fixed `boardMeetingDay` from `0` to `4` within that cycle.
 
 ### Restructure System
 
@@ -357,6 +384,7 @@ Each stock stores:
 - Restructure changes underlying value stats and the fair value anchor.
 - Subsidiaries include an extraction slider from full reinvestment to full extraction.
 - Extraction slider range: `0%` to `100%`
+- Extraction efficiency is derived from the active strategy profile and the current extraction rate rather than stored separately in save data.
 
 ### Restructure Profile Multipliers
 
@@ -499,13 +527,13 @@ Save file stores:
 - seed
 - run state
 - market state
-- portfolio
 - career state
-- corporate ownership
-- subsidiary state
 - prestige state
 - settings
 - meta stats
+- portfolio state is derived from stocks where `ownedShares > 0`
+- corporate ownership and subsidiary behavior are derived from each stock's `controlLevel`
+- save data is stored under `omnicorp-save-v1`
 
 ### Save Migration
 
@@ -517,47 +545,55 @@ Save file stores:
 ## Data Shapes
 
 ```ts
-type StockDef = {
-  id: string;
+type StrategyProfile = "growth" | "balanced" | "blue-chip";
+```
+
+```ts
+type Stock = {
+  stockId: string;
   ticker: string;
   name: string;
   sector: SectorId;
   initialPrice: number;
-  sharesOutstanding: number;
-  baseDrift: number;
+  currentPrice: number;
+  initialSharesOutstanding: number;
+  currentSharesOutstanding: number;
+  baseRegimeDrift: number;
+  currentRegimeDrift: number;
   baseVolatility: number;
-  beta: number;
+  currentVolatility: number;
+  baseBeta: number;
+  currentBeta: number;
+  lastShock: number;
+  initialStrategyProfile: StrategyProfile;
+  currentStrategyProfile: StrategyProfile;
   sectorCorrelation: number;
   fairValueAnchor: number;
   raidDifficulty: number;
-};
-```
-
-```ts
-type StockState = {
-  stockId: string;
-  price: number;
-  marketCap: number;
-  regimeDrift: number;
-  currentVolatility: number;
-  fairValue: number;
-  lastShock: number;
+  boardMeetingDay: number;
   ownedShares: number;
   controlLevel: "none" | "watch" | "activist" | "blocking" | "majority" | "full";
+  extractionRate: number;
   priceHistory: number[];
 };
 ```
 
 ```ts
+type MarketState = {
+  stocks: Stock[];
+};
+```
+
+```ts
 type CareerState = {
-  careerTrack: "management" | "tech" | "finance";
+  careerTrack: "service" | "tech" | "finance";
   titleId: string;
-  queuedCareerTrack: "management" | "tech" | "finance" | null;
+  queuedCareerTrack: "service" | "tech" | "finance" | null;
   queuedTitleId: string | null;
   collegeLevel: number;
   collegeXp: number;
   collegeActive: boolean;
-  xpByTrack: Record<"management" | "tech" | "finance", number>;
+  xpByTrack: Record<"service" | "tech" | "finance", number>;
   wagePerDay: number;
   financeCommissionRate: number;
 };
@@ -570,6 +606,7 @@ type SaveData = {
   updatedAt: number;
   seed: number;
   run: RunState;
+  market: MarketState;
   career: CareerState;
   prestige: PrestigeState;
   settings: SettingsState;
